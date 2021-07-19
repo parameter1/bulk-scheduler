@@ -1,12 +1,9 @@
-// eslint-disable-next-line no-unused-vars
-const { BaseDB } = require('@parameter1/base-cms-db');
 const inquirer = require('inquirer');
 const contentTypeChoices = require('./content-types');
 const segments = require('./segments');
 
-/**
- * @param {BaseDB} basedb
- */
+const { log } = console;
+
 module.exports = async (basedb) => {
   const {
     productId,
@@ -72,11 +69,16 @@ module.exports = async (basedb) => {
     ...contentFilter,
   };
 
+  // Upsert the website schedules
   await segments.upsertSchedules({
-    basedb,
     query,
     productId,
     sectionId,
     optionId,
   });
+
+  // Update the `sectionQuery` field
+  await segments.updateSectionQuery({ query, sectionId, optionId });
+
+  log('Bulk scheduling complete!');
 };

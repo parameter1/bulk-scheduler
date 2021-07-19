@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-unused-vars
 const batch = require('../batch');
 const { TENANT_KEY } = require('../env');
 const basedb = require('../db');
@@ -17,7 +16,6 @@ const createRef = (doc) => ({
 const now = new Date();
 
 module.exports = async ({
-  // basedb,
   productId,
   sectionId,
   optionId,
