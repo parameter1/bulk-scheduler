@@ -7,6 +7,17 @@
   "author": "Josh Worden <josh@parameter1.com>",
   "license": "MIT",
   "dependencies": {
-    "@parameter1/base-cms-db": "^2.22.2"
+    "@parameter1/base-cms-db": "^2.22.2",
+    "@parameter1/base-cms-env": "^2.0.0",
+    "dotenv": "^10.0.0",
+    "inquirer": "^8.1.2"
+  },
+  "scripts": {
+    "lint": "eslint --ext .js src/",
+    "test": "yarn lint"
+  },
+  "devDependencies": {
+    "eslint": "^7.31.0",
+    "eslint-config-airbnb-base": "^14.2.1"
   }
 }
