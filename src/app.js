@@ -2,21 +2,12 @@
 const { BaseDB } = require('@parameter1/base-cms-db');
 const inquirer = require('inquirer');
 const contentTypeChoices = require('./content-types');
-const batch = require('./batch');
-
-const { log } = console;
-
-const createRef = (doc) => ({
-  $ref: 'Content',
-  $id: doc._id,
-  $db: `${TENANT_KEY}_platform`,
-  type: doc.type,
-});
+const segments = require('./segments');
 
 /**
  * @param {BaseDB} basedb
  */
-module.exports = async (basedb, limit = 250) => {
+module.exports = async (basedb) => {
   const {
     productId,
     sectionId,
@@ -75,11 +66,17 @@ module.exports = async (basedb, limit = 250) => {
     },
   ]);
 
-  log({
+  const contentFilter = JSON.parse(filterText);
+  const query = {
+    ...(contentTypes.length && { type: { $in: contentTypes } }),
+    ...contentFilter,
+  };
+
+  await segments.upsertSchedules({
+    basedb,
+    query,
     productId,
     sectionId,
     optionId,
-    contentTypes,
-    filterText,
   });
 };
