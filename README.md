@@ -13,3 +13,5 @@ A BASE utility to bulk schedule content
 5. Select the relevant product, section, and option from the prompts
 6. Select content types to limit by, if necessary
 7. Input additional query parameters, if necessary (in JSON format)
+
+https://user-images.githubusercontent.com/1778222/126207292-920f1ef4-fa5e-4cf2-8986-b7a6a69c9494.mov
