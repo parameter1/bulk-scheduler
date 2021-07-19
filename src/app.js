@@ -1,10 +1,27 @@
+const { filterDsn } = require('@parameter1/base-cms-db/utils');
 const inquirer = require('inquirer');
 const contentTypeChoices = require('./content-types');
 const segments = require('./segments');
+const { basedb: createBaseDB, client } = require('./db');
 
 const { log } = console;
 
-module.exports = async (basedb) => {
+module.exports = async () => {
+  const { tenantKey } = await inquirer.prompt([
+    {
+      type: 'list',
+      name: 'tenantKey',
+      message: 'Select tenant',
+      choices: async () => {
+        const db = await client.db('admin');
+        const { databases } = await db.command({ listDatabases: 1 });
+        return databases.filter((d) => d.name.includes('_platform')).map((d) => d.name.replace('_platform', ''));
+      },
+    },
+  ]);
+  const basedb = await createBaseDB(tenantKey);
+  await basedb.connect().then((connection) => log(`MongoDB connected (${filterDsn(connection)}) for ${tenantKey}.`));
+
   const {
     productId,
     sectionId,
@@ -71,6 +88,8 @@ module.exports = async (basedb) => {
 
   // Upsert the website schedules
   await segments.upsertSchedules({
+    basedb,
+    tenantKey,
     query,
     productId,
     sectionId,
@@ -78,7 +97,12 @@ module.exports = async (basedb) => {
   });
 
   // Update the `sectionQuery` field
-  await segments.updateSectionQuery({ query, sectionId, optionId });
+  await segments.updateSectionQuery({
+    basedb,
+    query,
+    sectionId,
+    optionId,
+  });
 
   log('Bulk scheduling complete!');
 };

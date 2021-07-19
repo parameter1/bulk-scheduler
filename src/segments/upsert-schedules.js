@@ -1,26 +1,24 @@
 const batch = require('../batch');
-const { TENANT_KEY } = require('../env');
-const basedb = require('../db');
 
 const limit = 250;
 const projection = { status: 1, published: 1, type: 1 };
 const endDate = { $exists: false };
-
-const createRef = (doc) => ({
-  $ref: 'Content',
-  $id: doc._id,
-  $db: `${TENANT_KEY}_platform`,
-  type: doc.type,
-});
-
 const now = new Date();
 
 module.exports = async ({
+  basedb,
+  tenantKey,
   productId,
   sectionId,
   optionId,
   query,
 } = {}) => {
+  const createRef = (doc) => ({
+    $ref: 'Content',
+    $id: doc._id,
+    $db: `${tenantKey}_platform`,
+    type: doc.type,
+  });
   const [totalCount, coll] = await Promise.all([
     basedb.count('platform.Content', query),
     basedb.collection('website', 'Schedule'),

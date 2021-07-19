@@ -1,12 +1,12 @@
 // eslint-disable-next-line no-unused-vars
 const batch = require('../batch');
-const basedb = require('../db');
 
 const limit = 250;
 const projection = { status: 1, published: 1 };
 const now = new Date();
 
 module.exports = async ({
+  basedb,
   sectionId,
   optionId,
   query,

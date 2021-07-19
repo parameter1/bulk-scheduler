@@ -1,6 +1,9 @@
 const { createBaseDB, createMongoClient } = require('@parameter1/base-cms-db');
-const { MONGO_DSN, TENANT_KEY } = require('./env');
+const { MONGO_DSN } = require('./env');
 
-const baseClient = createMongoClient(MONGO_DSN, { appname: '@parameter1/bulk-schedule', useUnifiedTopology: true });
+const client = createMongoClient(MONGO_DSN, { appname: '@parameter1/bulk-schedule', useUnifiedTopology: true });
 
-module.exports = createBaseDB({ tenant: TENANT_KEY, client: baseClient });
+module.exports = {
+  basedb: (tenant) => createBaseDB({ tenant, client }),
+  client,
+};
