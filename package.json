@@ -1,0 +1,12 @@
+{
+  "name": "@parameter1/bulk-scheduler",
+  "version": "0.0.0",
+  "description": "A utility to bulk schedule content",
+  "main": "src/index.js",
+  "repository": "https://github.com/parameter1/bulk-scheduler",
+  "author": "Josh Worden <josh@parameter1.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@parameter1/base-cms-db": "^2.22.2"
+  }
+}
