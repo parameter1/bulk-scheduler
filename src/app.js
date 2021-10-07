@@ -21,6 +21,7 @@ module.exports = async () => {
   ]);
   const basedb = await createBaseDB(tenantKey);
   await basedb.connect().then((connection) => log(`MongoDB connected (${filterDsn(connection)}) for ${tenantKey}.`));
+  const sites = await basedb.find('platform.Product', { type: 'Site', status: 1 }, { projection: { name: 1 } });
 
   const {
     productId,
@@ -28,15 +29,13 @@ module.exports = async () => {
     optionId,
     contentTypes,
     filterText,
+    limitToSiteIds,
   } = await inquirer.prompt([
     {
       type: 'list',
       name: 'productId',
       message: 'Select site',
-      choices: async () => {
-        const choices = await basedb.find('platform.Product', { type: 'Site', status: 1 }, { projection: { name: 1 } });
-        return choices.map((c) => ({ name: c.name, value: c._id }));
-      },
+      choices: () => sites.map((c) => ({ name: c.name, value: c._id })),
     },
     {
       type: 'list',
@@ -65,6 +64,13 @@ module.exports = async () => {
       choices: contentTypeChoices,
     },
     {
+      type: 'checkbox',
+      name: 'limitToSiteIds',
+      message: 'Which sites content should be scheduled?',
+      choices: () => sites.map((c) => ({ name: c.name, value: c._id })),
+      default: (ans) => [ans.productId],
+    },
+    {
       type: 'input',
       name: 'filterText',
       message: 'Additional query filter (JSON)',
@@ -83,6 +89,7 @@ module.exports = async () => {
   const contentFilter = JSON.parse(filterText);
   const query = {
     ...(contentTypes.length && { type: { $in: contentTypes } }),
+    ...(limitToSiteIds.length && { 'mutations.Website.primarySite': { $in: limitToSiteIds } }),
     ...contentFilter,
   };
 
